@@ -1,106 +1,190 @@
-# Flutter Fitness Assessment App
+# **Flutter Fitness Assessment App**  
 
-Welcome to the Flutter Fitness Assessment App! This application allows users to input their physical details, calculate their Body Mass Index (BMI), and receive personalized fitness insights.
+A **fitness assessment application** built with **Flutter**, featuring **BMI calculation, user profile management, and theme customization**. The app follows **BLoC for state management, GoRouter for navigation, and Hive for local storage**.
 
-## Table of Contents
-
+## **Table of Contents**
 - [Features](#features)
 - [Architecture](#architecture)
-- [BLoC Pattern Usage](#bloc-pattern-usage)
-- [Challenges Faced](#challenges-faced)
+- [Project Structure](#project-structure)
+- [State Management (BLoC)](#state-management-bloc)
+- [Navigation (GoRouter)](#navigation-gorouter)
+- [Storage (Hive)](#storage-hive)
 - [Getting Started](#getting-started)
-- [Contributing](#contributing)
+  - [Prerequisites](#prerequisites)
+  - [Installation](#installation)
+- [Usage](#usage)
 
 
-## Features
+---
 
-- **User Input**: Users can enter personal details such as height, weight, age, and gender.
-- **BMI Calculation**: The app computes the BMI based on user inputs.
-- **Fitness Insights**: Provides feedback and recommendations based on the calculated BMI.
+## **Features**  
+✔ **BMI Calculation** – Calculates BMI based on user input.  
+✔ **User Profile Management** – Stores and manages user fitness data.  
+✔ **Theming Support** – Light/Dark mode toggling.  
+✔ **Persistent Storage** – Stores user data using Hive.  
+✔ **GoRouter Navigation** – Structured and scalable navigation.  
 
-## Architecture
+---
 
-This application follows the principles of Clean Architecture to ensure scalability, maintainability, and testability. The project is organized into the following layers:
+## **Architecture**  
+The app follows **Clean Architecture**, dividing concerns into:  
 
-1. **Presentation Layer**: Contains the UI components and widgets. This layer is responsible for displaying data and handling user interactions.
+- **Presentation Layer** → UI & State Management (BLoC).  
+- **Domain Layer** → Business Logic (Use Cases & Models).  
+- **Data Layer** → Persistent Storage (Hive).  
+- **Routing Layer** → Screen navigation (GoRouter).  
 
-2. **Domain Layer**: Encapsulates the business logic. It includes entities and use cases that define the core functionalities of the app.
+---
 
-3. **Data Layer**: Manages data sources, including APIs, local databases, and repositories. This layer is responsible for data retrieval and storage.
-
-The directory structure is as follows:
-
+## **Project Structure**  
+📂 **flutter-fitness-app**  
 ```
 lib/
-├── data/
-│   ├── models/
-│   ├── repositories/
-│   └── data_sources/
-├── domain/
-│   ├── entities/
-│   └── use_cases/
-└── presentation/
-    ├── blocs/
-    ├── screens/
-    └── widgets/
+│── bloc/  
+│   ├── profile/  
+│   │   ├── profile_cubit.dart  
+│   │   ├── profile_state.dart  
+│   ├── theme/  
+│   │   ├── theme_cubit.dart  
+│   │   ├── theme_state.dart  
+│── models/  
+│   ├── bmi_model.dart  
+│   ├── bmi_model.g.dart  
+│   ├── profile_model.dart  
+│   ├── profile_model.g.dart  
+│── repositories/  
+│   ├── profile_repository.dart  
+│── screens/  
+│   ├── details_screen.dart  
+│   ├── home_screen.dart  
+│   ├── profile_screen.dart  
+│   ├── settings_screen.dart  
+│   ├── splash_screen.dart  
+│── utils/  
+│   ├── router.dart  
+│   ├── theme.dart  
+│── main.dart  
+```  
+
+---
+
+## **State Management (BLoC)**
+The app uses **Cubit (BLoC)** to manage user profile and theme states.
+
+📌 **Example: Profile Cubit (`profile_cubit.dart`)**  
+```dart
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'profile_state.dart';
+import '../../models/profile_model.dart';
+
+class ProfileCubit extends Cubit<ProfileState> {
+  ProfileCubit() : super(ProfileInitial());
+
+  void updateProfile(ProfileModel profile) {
+    emit(ProfileLoaded(profile));
+  }
+}
 ```
 
-## BLoC Pattern Usage
+📌 **Example: Theme Cubit (`theme_cubit.dart`)**  
+```dart
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'theme_state.dart';
 
-The app utilizes the BLoC (Business Logic Component) pattern for state management, promoting a clear separation between business logic and UI components. The key components include:
+class ThemeCubit extends Cubit<ThemeState> {
+  ThemeCubit() : super(ThemeLight());
 
-- **Events**: Represent user actions or application triggers.
-- **States**: Define the various states of the UI based on events.
-- **BLoC**: Manages the mapping of events to states, handling the business logic accordingly.
+  void toggleTheme() {
+    emit(state is ThemeLight ? ThemeDark() : ThemeLight());
+  }
+}
+```
 
-For instance, when a user submits their physical details:
+---
 
-1. An `InputSubmitted` event is dispatched.
-2. The `FitnessBloc` processes this event, calculates the BMI, and determines the appropriate fitness insights.
-3. The UI updates based on the new state emitted by the `FitnessBloc`.
+## **Navigation (GoRouter)**
+The app uses **GoRouter** for navigation.
 
-This approach ensures a predictable and testable flow of data within the application.
+📌 **Example: Router Configuration (`router.dart`)**  
+```dart
+import 'package:go_router/go_router.dart';
+import '../screens/home_screen.dart';
+import '../screens/profile_screen.dart';
+import '../screens/settings_screen.dart';
 
-## Challenges Faced
+final GoRouter appRouter = GoRouter(
+  routes: [
+    GoRoute(path: '/', builder: (context, state) => HomeScreen()),
+    GoRoute(path: '/profile', builder: (context, state) => ProfileScreen()),
+    GoRoute(path: '/settings', builder: (context, state) => SettingsScreen()),
+  ],
+);
+```
 
-During the development of this app, several challenges were encountered:
+---
 
-- **State Management**: Implementing the BLoC pattern required a deep understanding of reactive programming and stream management. Ensuring efficient state transitions and avoiding unnecessary rebuilds were crucial considerations.
+## **Storage (Hive)**
+The app uses **Hive** for local storage.
 
-- **Input Validation**: Handling various user inputs and validating them appropriately to prevent errors during BMI calculation.
+📌 **Example: Profile Model (`profile_model.dart`)**  
+```dart
+import 'package:hive/hive.dart';
 
-- **Responsive Design**: Designing a user interface that adapts seamlessly to different screen sizes and orientations.
+part 'profile_model.g.dart';
 
-- **Performance Optimization**: Ensuring smooth performance, especially during data processing and state transitions, to provide a responsive user experience.
+@HiveType(typeId: 1)
+class ProfileModel {
+  @HiveField(0)
+  final String name;
 
-## Getting Started
+  @HiveField(1)
+  final int age;
 
-To run this application locally, follow these steps:
+  @HiveField(2)
+  final double weight;
 
-1. **Clone the Repository**:
+  @HiveField(3)
+  final double height;
 
-   ```bash
-   git clone https://github.com/charangiduturi/flutter-fitness-app.git
-   cd flutter-fitness-app
-   ```
+  ProfileModel({required this.name, required this.age, required this.weight, required this.height});
+}
+```
 
-2. **Install Dependencies**:
+---
 
-   Ensure you have Flutter installed. Then, run:
+## **Getting Started**
 
-   ```bash
-   flutter pub get
-   ```
+### **Prerequisites**
+- [Flutter SDK](https://flutter.dev/docs/get-started/install)
+- [Dart SDK](https://dart.dev/get-dart)
+- [Android Studio](https://developer.android.com/studio) or [VS Code](https://code.visualstudio.com/)
+- [Hive Storage](https://pub.dev/packages/hive)
 
-3. **Run the App**:
+### **Installation**
+1️⃣ **Clone the repository**  
+```bash
+git clone https://github.com/charangiduturi/flutter-fitness-app.git
+cd flutter-fitness-app
+```
+2️⃣ **Install dependencies**  
+```bash
+flutter pub get
+```
+3️⃣ **Run the app**  
+```bash
+flutter run
+```
 
-   Launch the application on an emulator or physical device:
+---
 
-   ```bash
-   flutter run
-   ```
+## **Usage**
+1️⃣ **Launch the app**  
+2️⃣ **Navigate to profile settings** to enter user details.  
+3️⃣ **Calculate BMI** and track progress.  
+4️⃣ **Toggle Dark/Light mode** from settings.  
 
-## Contributing
+---
 
-Contributions are welcome! If you'd like to enhance the app or fix issues, please fork the repository and submit a pull request. Ensure that your code adheres to the project's coding standards and includes appropriate tests.
 
+
+🔥 **Enjoy building your fitness goals with this app!** Let me know if you need further improvements. 🚀
