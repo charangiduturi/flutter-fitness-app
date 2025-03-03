@@ -10,7 +10,7 @@ Welcome to the Flutter Fitness Assessment App! This application allows users to 
 - [Challenges Faced](#challenges-faced)
 - [Getting Started](#getting-started)
 - [Contributing](#contributing)
-- [License](#license)
+
 
 ## Features
 
@@ -104,6 +104,4 @@ To run this application locally, follow these steps:
 
 Contributions are welcome! If you'd like to enhance the app or fix issues, please fork the repository and submit a pull request. Ensure that your code adheres to the project's coding standards and includes appropriate tests.
 
-## License
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
